@@ -34,6 +34,7 @@ ARG VERSION_TAG="${VERSION_TAG}"
 ARG VERSION_PRETTY="${VERSION_PRETTY}"
 
 COPY system_files/desktop/shared system_files/desktop/${BASE_IMAGE_NAME} /
+COPY system_files/desktop/UEFI/P3.00_Unlocked.rom
 
 # Update packages that commonly cause build issues
 RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
@@ -214,6 +215,7 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
     curl -Lo /etc/yum.repos.d/_copr_rok-cdemu.repo https://copr.fedorainfracloud.org/coprs/rok/cdemu/repo/fedora-"${FEDORA_MAJOR_VERSION}"/rok-cdemu-fedora-"${FEDORA_MAJOR_VERSION}".rep && \
     curl -Lo /etc/yum.repos.d/_copr_rodoma92-kde-cdemu-manager.repo https://copr.fedorainfracloud.org/coprs/rodoma92/kde-cdemu-manager/repo/fedora-"${FEDORA_MAJOR_VERSION}"/rodoma92-kde-cdemu-manager-fedora-"${FEDORA_MAJOR_VERSION}".repo && \
     curl -Lo /etc/yum.repos.d/_copr_rodoma92-rmlint.repo https://copr.fedorainfracloud.org/coprs/rodoma92/rmlint/repo/fedora-"${FEDORA_MAJOR_VERSION}"/rodoma92-rmlint-fedora-"${FEDORA_MAJOR_VERSION}".repo && \
+    curl -Lo /etc/yum.repos.d/_copr_mothenjoyer69-bc250-mesa.repo https://copr.fedorainfracloud.org/coprs/mothenjoyer69/bc250-mesa/repo/fedora-"${FEDORA_MAJOR_VERSION}"/mothenjoyer69-bc250-mesa-fedora-"${FEDORA_MAJOR_VERSION}".repo && \
     curl -Lo /etc/yum.repos.d/tailscale.repo https://pkgs.tailscale.com/stable/fedora/tailscale.repo && \
     rpm-ostree install \
         https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm \
@@ -225,7 +227,7 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
     /usr/libexec/containerbuild/cleanup.sh && \
     ostree container commit
 
-# Install kernel-fsync
+# Install kernel-fsync and disable amdgpu.sg_display
 RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
     --mount=type=bind,from=fsync,src=/tmp/rpms,dst=/tmp/fsync-rpms \
     rpm-ostree cliwrap install-to-root / && \
@@ -242,6 +244,7 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
     ; fi && \
     rpm-ostree install \
         scx-scheds && \
+    rpm-ostree kargs --append=amdgpu.sg_display=0
     /usr/libexec/containerbuild/cleanup.sh && \
     ostree container commit
 
@@ -324,13 +327,6 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
     rpm-ostree override replace \
     --experimental \
     --from repo=copr:copr.fedorainfracloud.org:kylegospo:bazzite-multilib \
-        mesa-libxatracker \
-        mesa-libglapi \
-        mesa-dri-drivers \
-        mesa-libgbm \
-        mesa-libEGL \
-        mesa-vulkan-drivers \
-        mesa-libGL \
         pipewire \
         pipewire-alsa \
         pipewire-gstreamer \
@@ -355,6 +351,21 @@ RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
     --experimental \
     --from repo=copr:copr.fedorainfracloud.org:sentry:switcheroo-control_discrete \
         switcheroo-control && \
+    /usr/libexec/containerbuild/cleanup.sh && \
+    ostree container commit
+
+#Install patched mesa for BC250
+RUN --mount=type=cache,dst=/var/cache/rpm-ostree \
+    rpm-ostree override replace \
+    --experimental \
+    --from repo=copr:copr.fedorainfracloud.org:kylegospo:bazzite-multilib \
+        mesa-libxatracker \
+        mesa-libglapi \
+        mesa-dri-drivers \
+        mesa-libgbm \
+        mesa-libEGL \
+        mesa-vulkan-drivers \
+        mesa-libGL \
     /usr/libexec/containerbuild/cleanup.sh && \
     ostree container commit
 
