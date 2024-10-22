@@ -20,21 +20,21 @@ jobs:
       matrix:
         image_name:
           - bazzite
-          - bazzite-nvidia
-          - bazzite-nvidia-open
+          #- bazzite-nvidia
+          #- bazzite-nvidia-open
           - bazzite-gnome
-          - bazzite-gnome-nvidia
-          - bazzite-gnome-nvidia-open
-          - bazzite-deck
-          - bazzite-deck-gnome
-          - bazzite-ally
-          - bazzite-ally-gnome
-          - bazzite-asus
-          - bazzite-gnome-asus
-          - bazzite-asus-nvidia
-          - bazzite-gnome-asus-nvidia
-          - bazzite-asus-nvidia-open
-          - bazzite-gnome-asus-nvidia-open
+          #- bazzite-gnome-nvidia
+          #- bazzite-gnome-nvidia-open
+          #- bazzite-deck
+          #- bazzite-deck-gnome
+          #- bazzite-ally
+          #- bazzite-ally-gnome
+          #- bazzite-asus
+          #- bazzite-gnome-asus
+          #- bazzite-asus-nvidia
+          #- bazzite-gnome-asus-nvidia
+          #- bazzite-asus-nvidia-open
+          #- bazzite-gnome-asus-nvidia-open
         major_version: [40]
     steps:
 
